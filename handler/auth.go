@@ -48,10 +48,13 @@ func HandleSignUpPost(e echo.Context) error {
 }
 
 func HandleAuthCallback(e echo.Context) error {
+
 	accessToken := e.Request().URL.Query().Get("access_token")
-	if len(accessToken) > 0 {
+	if len(accessToken) == 0 {
+		fmt.Printf("HERERERERRERER\n\n\n")
 		return auth.CallbackScript().Render(e.Request().Context(), e.Response().Writer)
 	}
+	fmt.Printf("HAHAHAHHAHAHAHAHAHAHHAHA  %s   \n\n\n          ", accessToken)
 	if err := setAuthSession(e.Response().Writer, e.Request(), accessToken); err != nil {
 		return err
 	}
