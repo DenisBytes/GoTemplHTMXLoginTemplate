@@ -1,60 +1,61 @@
 package auth
 
 import "github.com/DenisBytes/GoTemplHTMXLoginTemplate/view/layout"
+import "github.com/nedpals/supabase-go"
 
 templ Login(){
     @layout.App(false){
         <div class="flex justify-center mt-[calc(100vh-100vh+8rem)]">
 			<div class="max-w-md w-full bg-base-300 py-12 px-8 rounded-xl">
-				<h1 class="text-center text-xl font-black mb-10">Login to GoImageAi</h1>
-                // @LoginForm()
+				<h1 class="text-center text-xl font-black mb-10">Login to MyApp</h1>
+                @LoginForm(supabase.UserCredentials{}, LoginErrors{})
 			</div>
 		</div>
     }
 }
 
-// type LoginErros struct {
-//     Email string
-//     Password string
-//     InvalidCredentials string
-// }
+type LoginErrors struct {
+    Email string
+    Password string
+    InvalidCredentials string
+}
 
-// templ LoginForm(){
-//     <form
-// 		hx-post="/login"
-// 		hx-swap="outerHTML"
-// 		class="space-y-4"
-// 	>
-// 		<div class="w-full">
-// 			<div class="label">
-// 				<span class="label-text">Email address</span>
-// 			</div>
-// 			<input type="email" value={ creds.Email } name="email" autocomplete="off" required placeholder="Type here" class="input input-bordered w-full"/>
-// 			if len(errors.Email) > 0 {
-// 				<div class="label">
-// 					<span class="label-text-alt text-error">{ errors.Email }</span>
-// 				</div>
-// 			}
-// 		</div>
-// 		<div class="w-full">
-// 			<div class="label">
-// 				<span class="label-text">Password</span>
-// 			</div>
-// 			<input type="password" name="password" required autocomplete="off" placeholder="Type here" class="input input-bordered w-full"/>
-// 			if len(errors.Password) > 0 {
-// 				<div class="label">
-// 					<span class="label-text-alt text-error">{ errors.Password }</span>
-// 				</div>
-// 			}
-// 		</div>
-// 		if len(errors.InvalidCredentials) > 0 {
-// 			<div class="text-sm text-error">{ errors.InvalidCredentials }</div>
-// 		}
-// 		<button type="submit" class="btn btn-primary w-full">Login <i class="fa-solid fa-arrow-right"></i></button>
-// 		<div class="divider">OR</div>
-// 		<a href="/login/provider/github" class="btn bg-[#000] hover:text-black text-white w-full">Login with GitHub<i class="fa-brands fa-github"></i></a>
-// 	</form>
-// }
+templ LoginForm(creds supabase.UserCredentials,errors LoginErrors){
+    <form
+		hx-post="/login"
+		hx-swap="outerHTML"
+		class="space-y-4"
+	>
+		<div class="w-full">
+			<div class="label">
+				<span class="label-text">Email address</span>
+			</div>
+			<input type="email" value={ creds.Email } name="email" autocomplete="off" required placeholder="Type here" class="input input-bordered w-full"/>
+			if len(errors.Email) > 0 {
+				<div class="label">
+					<span class="label-text-alt text-error">{ errors.Email }</span>
+				</div>
+			}
+		</div>
+		<div class="w-full">
+			<div class="label">
+				<span class="label-text">Password</span>
+			</div>
+			<input type="password" name="password" required autocomplete="off" placeholder="Type here" class="input input-bordered w-full"/>
+			if len(errors.Password) > 0 {
+				<div class="label">
+					<span class="label-text-alt text-error">{ errors.Password }</span>
+				</div>
+			}
+		</div>
+		if len(errors.InvalidCredentials) > 0 {
+			<div class="text-sm text-error">{ errors.InvalidCredentials }</div>
+		}
+		<button type="submit" class="btn btn-primary w-full">Login <i class="fa-solid fa-arrow-right"></i></button>
+		<div class="divider">OR</div>
+		<a href="/login/provider/github" class="btn bg-[#000] hover:text-black text-white w-full">Login with GitHub<i class="fa-brands fa-github"></i></a>
+	</form>
+}
 
 
 templ SignUp() {
@@ -136,4 +137,79 @@ templ CallbackScript() {
 		var newURL = url.replace("#", "?")
 		window.location = newURL
 	</script>
+}
+
+
+templ AccountSetup(){
+	@layout.App(true){
+		<div class="max-w-xl bg-base-300 px-6 py-12 rounded-xl w-full mx-auto mt-4">
+			<h1 class="text-xl font-black mb-8 text-center">Setup your account</h1>
+			@AccountSetupForm(AccountSetupParams{}, AccountSetupErrors{})
+		</div>
+	}
+}
+
+type AccountSetupParams struct {
+	Username string
+
+}
+
+type AccountSetupErrors struct {
+	Username string
+}
+
+templ AccountSetupForm(params AccountSetupParams, errors AccountSetupErrors) {
+	<form hx-post="/account/setup" hx-swap="outerHTML">
+		<div class="label">
+			<span class="label-text">Enter your username</span>
+			if len(errors.Username) > 0 {
+				<span class="label-text-alt text-error">{ errors.Username }</span>
+			}
+		</div>
+		<label class="input input-bordered flex items-center gap-2 mb-4">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 opacity-70"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" /></svg>
+			<input type="text" class="w-full" placeholder="Username" name="username" />
+		</label>
+		<button type="submit" class="btn btn-primary">Setup account <i class="fa-solid fa-arrow-right"></i></button>
+	</form>
+}
+
+templ ResetPassword(){
+	@layout.App(true) {
+        <div class="max-w-2xl w-full mx-auto mt-8">
+            <div>
+                <h1 class="text-lg font-semibold border-b bordaer-gray-600 pb-2">Reset Password</h1>
+				<div class="py-6">
+					<label class="text-label mb-2">Enter new Password </label>
+					@ResetPasswordForm(ResetPasswordErrors{})
+				</div>
+            </div>
+        </div>
+    }
+}
+
+type ResetPasswordParams struct {
+	NewPassword string
+}
+
+type ResetPasswordErrors struct {
+	NewPassword string
+}
+
+templ ResetPasswordForm(errors ResetPasswordErrors) {
+	<form hx-put="/auth/reset-password" hx-swap="outerHTML">
+		<div class="mb-4">
+			<input class="input input-bordered w-full max-w-sm" type="password" name="password" />
+			if len(errors.NewPassword ) > 0 {
+				<div class="text-sm text-error mt-1">{ errors.NewPassword }</div>
+			}
+		</div>
+		<button type="submit" class="btn btn-primary">Update</button>
+	</form>
+}
+
+templ ResetPasswordInitiated(email string) {
+	<div>
+		A password reset link is being sent to <span class="text-info font-semibold">{email}</span>
+	</div>
 }

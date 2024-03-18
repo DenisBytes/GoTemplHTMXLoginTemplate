@@ -1,10 +1,14 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/DenisBytes/GoTemplHTMXLoginTemplate/view/home"
 	"github.com/labstack/echo/v4"
 )
 
-func HandleHomeIndex(ctx echo.Context) error {
-	return home.Index().Render(ctx.Request().Context(), ctx.Response().Writer)
+func HandleHomeIndex(e echo.Context) error {
+	user := GetAuthenticatedUser(e)
+	fmt.Printf("%+v\n", user)
+	return home.Index().Render(e.Request().Context(), e.Response().Writer)
 }
